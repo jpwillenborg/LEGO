@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  set_num: MyString
+  name: MyString
+  year: 1
+  total_parts: 1
+  image_url: MyString
+
+two:
+  set_num: MyString
+  name: MyString
+  year: 1
+  total_parts: 1
+  image_url: MyString

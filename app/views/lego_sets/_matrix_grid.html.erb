@@ -1,0 +1,131 @@
+<% if selected_set %>
+  <div class="flex flex-col gap-6 w-full box-border" id="active-matrix-workspace">
+    
+    <!-- RESTRUCTURED SUMMARY HERO BLOCK (STATIONARY SIDEBAR LAYOUT WITH SPLIT FLOWS) -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 pb-6 border-b border-white/[0.06] w-full box-border" id="matrix-progress-banner">
+      
+      <!-- LEFT INNER ASPECT SIDEBAR (CLICKABLE LIGHTBOX TRIGGER) -->
+      <% if selected_set.image_url.present? %>
+        <button type="button"
+                onclick="document.getElementById('set-image-modal-img').src='<%= j selected_set.image_url %>'; document.getElementById('set-image-modal-title').textContent='<%= j selected_set.name %>'; document.getElementById('set-image-modal').style.display='flex';"
+                title="Click to enlarge set image"
+                class="md:col-span-4 flex items-center justify-center bg-[#06090f] hover:bg-[#06090f]/80 rounded-[16px] p-4 shadow-elevated-card h-40 max-w-[240px] w-full mx-auto md:mx-0 cursor-pointer group transition-all relative"
+                style="border: none !important;">
+          <img src="<%= selected_set.image_url %>" 
+               alt="<%= selected_set.name %>" 
+               style="max-height: 8rem; max-width: 100%;"
+               class="h-auto w-auto object-contain rounded-[8px] transition-transform duration-200 group-hover:scale-105" />
+          <span class="absolute bottom-2 right-2.5 font-mono text-[0.65rem] uppercase tracking-wider text-white/50 group-hover:text-[#00e5ff] bg-black/50 px-2 py-0.5 rounded transition-colors">Zoom</span>
+        </button>
+      <% else %>
+        <div class="md:col-span-4 flex items-center justify-center bg-[#06090f] rounded-[16px] p-4 shadow-elevated-card h-40 max-w-[240px] w-full mx-auto md:mx-0" style="border: none !important;">
+          <span class="text-3xl opacity-30">🧱</span>
+        </div>
+      <% end %>
+      
+      <!-- RIGHT INNER COLUMN MATRIX -->
+      <% 
+        # Calculate totals dynamically out of the browser session data matrix instead of active table rows
+        total_required = inventory_parts.sum(&:quantity)
+        total_found = inventory_parts.sum { |p| session[:sandbox_inventory][p.id.to_s] || 0 }
+        percentage = total_required > 0 ? ((total_found.to_f / total_required) * 100).round : 0
+      %>
+      <div class="md:col-span-8 flex flex-col justify-center text-left w-full">
+        <h2 class="text-white font-sans font-bold text-[1.65rem] tracking-tight leading-tight m-0"><%= selected_set.name %></h2>
+        <span class="font-mono text-sm text-portfolio-accent/60 mt-1 tracking-portfolio font-semibold">Set Number: <%= selected_set.set_num.sub(/-1\z/, "") %></span>
+        
+        <div class="flex justify-between items-baseline w-full max-w-md mt-4 font-mono text-[0.9rem] text-white font-bold">
+          <span class="text-secondary/60 uppercase font-medium text-xs tracking-wide">Inventory Progress:</span>
+          <span><%= total_found %> / <%= total_required %> Pieces Found</span>
+        </div>
+        
+        <div class="w-full max-w-md bg-[#06090f] h-2.5 rounded-full mt-2 overflow-hidden relative" style="border: none !important;">
+          <div class="bg-[#00e5ff] h-full rounded-full transition-all duration-300" style="width: <%= percentage %>%"></div>
+        </div>
+        
+        <span class="font-mono text-xs text-portfolio-accent font-bold mt-1.5 uppercase tracking-wider"><%= percentage %>% Completed</span>
+      </div>
+
+    </div>
+
+    <!-- EXPANDED HIGH-DENSITY INTERACTIVE 3-COLUMN BRICK GRID (RESTORED DIMENSIONS) -->
+    <% 
+      display_limit = params[:limit].present? ? params[:limit].to_i : 48
+      visible_parts = inventory_parts.limit(display_limit)
+      has_more = inventory_parts.count > display_limit
+    %>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mt-2 w-full box-border">
+      <% visible_parts.each do |inv_part| %>
+        <% 
+          # Pull the active tracking count straight from the browser's cookie vault
+          live_count = session[:sandbox_inventory][inv_part.id.to_s] || 0
+          is_complete = live_count >= inv_part.quantity
+          is_zero = live_count <= 0
+          card_bg = is_complete ? 'bg-[#00e5ff]/[0.12]' : 'bg-[#06090f]/45'
+          badge_bg = is_complete ? 'bg-[#00e5ff]/[0.16] text-[#00e5ff]' : 'bg-[#06090f]/80 text-white/80'
+          dec_btn_classes = is_zero ? 'bg-white/[0.02] text-rose-400/25 cursor-not-allowed' : 'bg-white/5 hover:bg-rose-500/15 text-rose-400 cursor-pointer'
+          inc_btn_classes = is_complete ? 'bg-white/[0.02] text-[#00e5ff]/25 cursor-not-allowed' : 'bg-white/5 hover:bg-[#00e5ff]/15 text-[#00e5ff] cursor-pointer'
+        %>
+        
+        <% cache [inv_part, live_count, is_complete] do %>
+          <div class="p-4 rounded-[14px] flex flex-col justify-between items-center text-center transition-all box-border select-none min-h-[260px] <%= card_bg %>" style="border: none !important;" id="part_card_<%= inv_part.id %>">
+            
+            <div class="w-full flex justify-between font-mono text-sm text-secondary/60 font-bold px-0.5 tracking-normal mb-2">
+              <span>#<%= inv_part.part.part_num %></span>
+              <span class="<%= is_complete ? 'text-[#00e5ff] font-extrabold' : '' %>">Total: x<%= inv_part.quantity %></span>
+            </div>
+
+            <div class="w-20 h-20 my-2 flex items-center justify-center bg-transparent flex-shrink-0 relative">
+              <img src="<%= inv_part.part.image_url %>" 
+                   alt="" 
+                   loading="lazy" 
+                   width="80"
+                   height="80"
+                   style="aspect-ratio: 1 / 1;"
+                   class="max-w-full max-h-full object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.35)]" 
+                   onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://w3.org\' width=\'40\' height=\'40\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%234a5568\' stroke-width=\'1.5\'><rect x=\'2\' y=\'7\' width=\'20\' height=\'14\' rx=\'2\'/><circle cx=\'7\' cy=\'11\' r=\'1\'/><circle cx=\'12\' cy=\'11\' r=\'1\'/><circle cx=\'17\' cy=\'11\' r=\'1\'/></svg>'" />
+            </div>
+
+            <span class="font-sans text-[0.95rem] text-white/90 font-bold leading-snug line-clamp-2 min-h-[2.6rem] flex items-center justify-center w-full px-1 mt-2 mb-3 tracking-normal" title="<%= inv_part.part.name %>">
+              <%= inv_part.part.name %>
+            </span>
+
+            <div id="button_zone_<%= inv_part.id %>" class="w-full flex flex-col gap-2 mt-auto">
+              
+              <!-- REPAIRED HUD BANNER: Borderless pill matching pizza app status highlight -->
+              <div class="w-full py-2 px-3 rounded-[6px] font-mono text-sm font-bold text-center tracking-wide <%= badge_bg %>" style="border: none !important;">
+                Have: <%= live_count %> / <%= inv_part.quantity %>
+              </div>
+
+              <!-- BUTTON CONSOLE: Optically centered glyphs and compact 32px height -->
+              <div class="w-full flex items-center gap-2">
+                <%= button_to "−", toggle_part_lego_set_path(selected_set, inventory_part_id: inv_part.id, operation: "decrement"), method: :post, disabled: is_zero, form_class: "w-1/2 m-0 p-0 block", class: "w-full h-8 rounded-[6px] font-sans text-xl font-bold leading-none pb-1 flex items-center justify-center transition-all focus-ring m-0 p-0 #{dec_btn_classes}", style: "border: none !important;" %>
+                <%= button_to "+", toggle_part_lego_set_path(selected_set, inventory_part_id: inv_part.id, operation: "increment"), method: :post, disabled: is_complete, form_class: "w-1/2 m-0 p-0 block", class: "w-full h-8 rounded-[6px] font-sans text-xl font-bold leading-none pb-0.5 flex items-center justify-center transition-all focus-ring m-0 p-0 #{inc_btn_classes}", style: "border: none !important;" %>
+              </div>
+
+            </div>
+
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if has_more %>
+      <div id="matrix-lazy-load-trigger" class="w-full flex justify-center pt-8 pb-4">
+        <%= link_to "Load More Pieces", 
+                    lego_set_path(selected_set, limit: display_limit + 48), 
+                    data: { turbo_stream: true },
+                    class: "btn-primary font-sans font-bold text-base leading-none px-6 bg-white/5 hover:bg-white/10 rounded-[6px] text-white/90 hover:text-white transition-all cursor-pointer no-underline inline-flex items-center justify-center box-border",
+                    style: "height: 36px !important; border: none !important; padding-top: 9px !important; padding-bottom: 8px !important;" %>
+      </div>
+    <% end %>
+
+  </div>
+<% else %>
+  <div class="flex flex-col items-center justify-center text-center py-24 gap-3.5 w-full box-border">
+    <div class="text-[3rem] opacity-25 select-none">🧱</div>
+    <div class="font-sans text-lg font-bold text-white tracking-tight">No Active Repository Loaded</div>
+    <p class="text-secondary/70 text-sm max-w-sm m-0 leading-relaxed tracking-normal select-text">Enter a valid Lego product code on the left menu board to query and map a new dynamic checking dashboard inventory matrix.</p>
+  </div>
+<% end %>

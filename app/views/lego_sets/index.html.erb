@@ -1,0 +1,101 @@
+<div class="w-full flex flex-col box-border relative" id="workspace-content-canvas">
+  
+  <!-- GLOBAL ROOT PORTAL HOVER MODAL SHROUD CARD -->
+  <div id="workspace-loading-shroud" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(9, 13, 22, 0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 1.25rem;" class="flex">
+    <div style="width: 3.5rem; height: 3.5rem; border-radius: 50%; border: 3px solid rgba(0, 229, 255, 0.1); border-top-color: #00e5ff;" class="animate-spin"></div>
+    <h3 style="color: #ffffff; font-family: sans-serif; font-size: 1.35rem; font-weight: 700; margin: 0; padding: 0; display: block !important;">Loading Manifest...</h3>
+    <p style="color: #00e5ff; font-family: monospace; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; margin: 0; padding: 0; font-weight: 600; display: block !important;">Querying Rebrickable API</p>
+    <p style="color: rgba(160, 174, 192, 0.8); font-family: sans-serif; font-size: 0.85rem; max-w: 300px; text-align: center; margin: 0; padding: 0; line-height: 1.5; display: block !important;">Syncing remote parts data maps and compiling database catalog rows. Large records can require up to 45 seconds on initial syncs.</p>
+  </div>
+
+  <!-- SET IMAGE LIGHTBOX MODAL -->
+  <div id="set-image-modal" onclick="this.style.display='none'" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(9, 13, 22, 0.88); backdrop-filter: blur(8px); z-index: 9998; align-items: center; justify-content: center; padding: 1.5rem; box-sizing: border-box;">
+    <div onclick="event.stopPropagation()" style="background-color: #0d1322; border-radius: 18px; padding: 1.5rem; max-width: 720px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); display: flex; flex-direction: column; gap: 1rem; position: relative;">
+      <div class="flex items-center justify-between gap-4">
+        <h3 id="set-image-modal-title" class="text-white font-sans font-bold text-lg m-0 truncate"></h3>
+        <button type="button" onclick="document.getElementById('set-image-modal').style.display='none'" style="border: none !important;" class="bg-white/10 hover:bg-white/20 text-white font-mono text-sm font-bold px-3 py-1.5 rounded-[6px] cursor-pointer transition-colors flex-shrink-0">✕ Close</button>
+      </div>
+      <div style="background-color: #06090f; border-radius: 12px; padding: 1.5rem; display: flex; align-items: center; justify-content: center; min-height: 300px; max-height: 75vh;">
+        <img id="set-image-modal-img" src="" alt="" style="max-width: 100%; max-height: 68vh; object-fit: contain; border-radius: 8px;" />
+      </div>
+    </div>
+  </div>
+
+  <div id="loading-shroud-dismissal-zone" style="display: none;"></div>
+
+  <!-- UNIFIED MASTER SPACING RESET CONTAINER — EXACT PIZZA APP TYPOGRAPHY MATCH -->
+  <div class="flex flex-col pb-4 mb-6 text-left">
+    <span class="text-[0.95rem] md:text-[1.1rem] font-mono text-[#00e5ff] block mb-0 font-normal">// Interactive Brick &amp; Part Inventory</span>
+    
+    <!-- HEADER DISTANCE RECONCILIATION LAYER -->
+    <h1 style="padding-top: 9px !important;" class="text-[1.65rem] md:text-[2.1rem] font-semibold tracking-normal text-white m-0 leading-none">LEGO<sup style="vertical-align: 0.35em; font-size: 0.5em;" class="font-normal ml-0.5">&reg;</sup> Collection Tracker</h1>
+    
+    <!-- SUMMARY VERTICAL SPACING LAYOUT HANDLERS -->
+    <p style="margin-top: 19px !important; margin-bottom: 24px !important;" class="text-[#a0aec0] text-[0.95rem] md:text-[1.05rem] leading-[1.6] block w-full">
+      An automated inventory verification tool designed to query product manifests via the Rebrickable API. Built as a high-visibility monolithic single-page architecture utilizing Ruby on Rails and Active Record, the workspace implements modern Hotwire (Turbo Streams) to handle background data ingestion and micro-interaction part checking tracking parameters with zero full-page browser refreshes.
+    </p>
+  </div>
+
+  <!-- MAIN SKELETON SPLIT GRID -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full box-border">
+    
+    <!-- LEFT PANEL SIDEBAR CONTROLS (1/3 Width) -->
+    <div class="lg:col-span-1 flex flex-col gap-6 w-full box-border">
+      
+      <!-- Lookup Console Panel Card -->
+      <div class="portfolio-panel-card p-6" style="border: none !important;">
+        <h2 class="text-white font-sans font-bold text-[1.5rem] tracking-tight m-0 mb-5">LEGO Set Lookup</h2>
+        
+        <%= form_with url: lego_sets_path, method: :post, id: "lego-search-form", data: { turbo_stream: true }, class: "flex flex-col gap-4 w-full m-0" do |f| %>
+          <div class="flex flex-col gap-2 w-full">
+            <label for="set_num" class="font-mono text-sm text-secondary/60 uppercase tracking-wider font-semibold">Set Number</label>
+            <div class="flex items-center gap-2 w-full">
+              <%= text_field_tag :set_num, nil, placeholder: "ex: 42207", style: "height: 38px !important; padding-top: 0 !important; padding-bottom: 0 !important; border: none !important; box-sizing: border-box;", class: "w-full bg-[#06090f] rounded-[6px] px-3.5 text-white font-mono text-base focus:outline-none focus:ring-1 focus:ring-[#00e5ff]/50 transition-all tracking-wide" %>
+              <%= f.submit "Search", onclick: "document.getElementById('workspace-loading-shroud').style.display = 'flex';", style: "height: 36px !important; padding-top: 0 !important; padding-bottom: 2px !important; border: none !important; box-sizing: border-box;", class: "btn-primary font-sans font-bold text-base cursor-pointer px-5 flex-shrink-0" %>
+            </div>
+          </div>
+        <% end %>
+
+        <div id="search-alert-stream" class="mt-2.5 font-mono text-sm text-portfolio-purple font-semibold tracking-normal"></div>
+
+        <!-- Sandbox Display Menu Badge Controls Row Link Items -->
+        <div class="mt-6 pt-5 border-t border-white/[0.04] w-full">
+          <span class="block font-mono text-[0.8rem] text-secondary/45 uppercase tracking-wider font-bold mb-3">Featured Sets</span>
+          <div class="flex flex-col gap-3">
+            
+            <% [["42207-1", "Ferrari SF-24 F1 Car"], ["10309-1", "Succulents"], ["21063-1", "Neuschwanstein Castle"]].each do |num, fallback_name| %>
+              <% cached_set = @lego_sets.find { |s| s.set_num == num } %>
+              <% clean_num = num.sub(/-1\z/, "") %>
+              <button onclick="document.getElementById('set_num').value='<%= clean_num %>'; document.getElementById('workspace-loading-shroud').style.display = 'flex'; document.forms['lego-search-form'].requestSubmit();" class="w-full flex items-center gap-3.5 bg-white/5 hover:bg-white/10 text-[#00e5ff] font-sans text-sm font-semibold px-4 py-2.5 rounded-[8px] transition-all cursor-pointer border border-white/[0.02] text-left focus-ring group">
+                <div class="w-9 h-9 bg-[#06090f] rounded-[6px] p-1 flex-shrink-0 flex items-center justify-center border border-white/[0.04]">
+                  <% if cached_set&.image_url.present? %>
+                    <img src="<%= cached_set.image_url %>" alt="" loading="lazy" width="36" height="36" style="aspect-ratio: 1/1;" class="max-w-full max-h-full object-contain" />
+                  <% else %>
+                    <span class="text-sm">🧱</span>
+                  <% end %>
+                </div>
+                <span class="text-white/90 group-hover:text-[#00e5ff] transition-colors truncate"><%= cached_set ? cached_set.name : fallback_name %></span>
+              </button>
+            <% end %>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Cached Repositories List Panel Card -->
+      <div class="portfolio-panel-card p-6" style="border: none !important;">
+        <h3 class="text-white font-sans font-bold text-[1.5rem] tracking-tight m-0 mb-4">My Saved Sets</h3>
+        <div id="local-sets-list-container" class="flex flex-col gap-3 w-full box-border">
+          <%= render "set_list", lego_sets: @lego_sets, selected_set: @selected_set %>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL FIELD MAP DISPLAY VISUALIZER (2/3 Width) -->
+    <div id="matrix-display-panel" class="lg:col-span-2 w-full portfolio-panel-card min-h-[520px] box-border" style="border: none !important;">
+      <%= render "matrix_grid", selected_set: @selected_set, inventory_parts: @inventory_parts %>
+    </div>
+
+  </div>
+</div>

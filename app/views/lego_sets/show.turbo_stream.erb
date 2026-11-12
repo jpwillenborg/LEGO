@@ -1,0 +1,24 @@
+<% if params[:limit].present? %>
+  <%= turbo_stream.replace "matrix-display-panel" do %>
+    <div id="matrix-display-panel" class="lg:col-span-2 w-full portfolio-panel-card min-h-[520px] box-border" style="border: none !important;">
+      <%= render "matrix_grid", selected_set: @selected_set, inventory_parts: @inventory_parts %>
+    </div>
+  <% end %>
+<% else %>
+  <%= turbo_stream.replace "matrix-display-panel" do %>
+    <div id="matrix-display-panel" class="lg:col-span-2 w-full portfolio-panel-card min-h-[520px] box-border" style="border: none !important;">
+      <%= render "matrix_grid", selected_set: @selected_set, inventory_parts: @inventory_parts %>
+    </div>
+  <% end %>
+
+  <%= turbo_stream.replace "local-sets-list-container" do %>
+    <div id="local-sets-list-container" class="flex flex-col gap-3 w-full box-border">
+      <%= render "set_list", lego_sets: @lego_sets, selected_set: @selected_set %>
+    </div>
+  <% end %>
+<% end %>
+
+<% # FIXED CLOSING SCRIPT CHANNEL: Targets a separate hidden zone to preserve your loading popup content completely %>
+<%= turbo_stream.update "loading-shroud-dismissal-zone" do %>
+  <script>document.getElementById('workspace-loading-shroud').style.display = 'none';</script>
+<% end %>

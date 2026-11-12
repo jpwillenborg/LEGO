@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #090d16;
+  color: #a0aec0;
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.015em;
+  overflow-x: hidden;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  body {
+    overflow-y: auto !important;
+  }
+  .app-shell {
+    zoom: 0.88;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    min-height: 114vh !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  body {
+    overflow-y: auto !important;
+  }
+  .app-shell {
+    zoom: 0.92;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    min-height: 109vh !important;
+  }
+}
+
+@layer components {
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20 rounded-[4px];
+  }
+
+  .text-portfolio-accent {
+    color: #00e5ff !important;
+  }
+
+  .btn-primary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.01em !important;
+    border-radius: 6px !important;
+    padding: 0.45rem 1.25rem !important;
+    background-color: #00e5ff !important;
+    color: #090d16 !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease-in-out !important;
+  }
+
+  .btn-primary:hover {
+    background-color: #33ebff !important;
+    opacity: 0.9 !important;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center whitespace-nowrap font-sans font-semibold text-[0.95rem] tracking-[0.01em] rounded-[6px] px-7 py-2.5 bg-white/5 text-white transition-all duration-200 hover:bg-white/10 hover:text-[#00e5ff] active:bg-white/20 no-underline text-center cursor-pointer focus-ring;
+  }
+
+  /* REMOVED BORDERS COMPLETELY FROM MASTER COMPONENT DEFINITION */
+  .portfolio-panel-card {
+    @apply bg-[#111823] rounded-[16px] p-5 md:p-12 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] text-left transition-colors duration-250 ease-out hover:bg-[#141e2e];
+    border: none !important;
+  }
+
+  .section-description {
+    @apply m-0 text-[#a0aec0] text-[1.05rem] leading-[1.6] tracking-[0.015em];
+  }
+
+  /* PRODUCTION-GRADE PORTFOLIO HEADER SPACER UTILITY */
+  .portfolio-title-alignment-spacer {
+    padding-top: 9px !important;
+  }
+}
+
+#allocation-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(24, minmax(0, 1fr));
+  width: 100%;
+}
+
+.memory-block-node {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.memory-block-node.is-overlapping {
+  background-color: #39ff14 !important;
+}
+
+.portfolio-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.portfolio-scrollbar::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+.portfolio-scrollbar::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 10px;
+}
+
+.portfolio-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #00e5ff;
+}
+
+/* -----------------------------------------------------------------
+   HOTWIRE TURBO LOADING SCREEN OVERRIDES
+   ----------------------------------------------------------------- */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#workspace-loading-shroud[style*="display: flex"] {
+  animation: fadeIn 200ms ease-out forwards;
+}

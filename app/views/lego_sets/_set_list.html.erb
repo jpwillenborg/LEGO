@@ -1,0 +1,69 @@
+<% if lego_sets.any? %>
+  <% lego_sets.each do |set| %>
+    <% 
+      is_active = selected_set && selected_set.id == set.id
+      active_classes = is_active ? "bg-[#00e5ff]/[0.14]" : "bg-[#06090f]/45 hover:bg-[#06090f]/75"
+    %>
+    
+    <!-- CARD WRAPPER WITH SIDE-BY-SIDE SELECT LINK + DELETE BUTTON -->
+    <div style="border: none !important;" class="w-full rounded-[12px] flex items-center justify-between gap-1.5 pr-2.5 transition-all select-none box-border group <%= active_classes %>">
+      
+      <!-- SELECT SET LINK AREA -->
+      <%= link_to lego_set_path(set), 
+                  data: { turbo_stream: true }, 
+                  onclick: "document.getElementById('workspace-loading-shroud').style.display = 'flex';",
+                  class: "flex-grow min-w-0 py-3.5 pl-3 pr-1 flex items-center gap-3 text-left no-underline" do %>
+        
+        <% if set.image_url.present? %>
+          <div class="w-14 h-14 bg-[#06090f]/80 rounded-[8px] p-1.5 flex-shrink-0 flex items-center justify-center">
+            <img src="<%= set.image_url %>" 
+                 alt="" 
+                 loading="lazy" 
+                 width="56"
+                 height="56"
+                 style="aspect-ratio: 1 / 1;"
+                 class="max-w-full max-h-full object-contain transition-transform group-hover:scale-105" />
+          </div>
+        <% else %>
+          <div class="w-14 h-14 bg-[#06090f]/80 rounded-[8px] flex items-center justify-center text-sm flex-shrink-0">
+            🧱
+          </div>
+        <% end %>
+
+        <div class="flex flex-col min-w-0 flex-grow">
+          <div class="flex items-baseline gap-1.5 whitespace-nowrap">
+            <span class="font-mono text-sm font-bold tracking-wide <%= is_active ? 'text-white/80' : 'text-secondary/50' %>">
+              ID: <%= set.set_num.sub(/-1\z/, "") %>
+            </span>
+            <span class="font-mono text-sm <%= is_active ? 'text-white/70' : 'text-secondary/45' %> font-medium">
+              (<%= set.year %>)
+            </span>
+          </div>
+          
+          <h4 class="<%= is_active ? 'text-[#00e5ff]' : 'text-white group-hover:text-[#00e5ff]' %> font-sans text-[0.95rem] font-bold truncate m-0 mt-0.5 leading-tight tracking-normal transition-colors">
+            <%= set.name %>
+          </h4>
+          
+          <span class="font-mono text-xs <%= is_active ? 'text-[#00e5ff]' : 'text-[#00e5ff]/60 group-hover:text-[#00e5ff]/90' %> mt-1 uppercase tracking-wider font-semibold transition-colors">
+            <%= set.total_parts %> pieces
+          </span>
+        </div>
+
+      <% end %>
+
+      <!-- DELETE SET BUTTON -->
+      <%= button_to lego_set_path(set),
+                    method: :delete,
+                    title: "Remove #{set.name}",
+                    style: "border: none !important;",
+                    class: "w-7 h-7 rounded-[6px] bg-white/[0.04] hover:bg-rose-500/20 text-white/35 hover:text-rose-400 font-sans text-base font-bold leading-none pb-0.5 flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors" do %>
+        &times;
+      <% end %>
+
+    </div>
+  <% end %>
+<% else %>
+  <div class="flex flex-col items-center justify-center text-center py-12 px-4 rounded-[12px] bg-[#06090f]/45 w-full box-border">
+    <span class="text-sm text-secondary/40 font-sans font-medium tracking-normal">No saved sets yet. Search or select a featured set above.</span>
+  </div>
+<% end %>

@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  lego_set: one
+  part: one
+  quantity: 1
+  loose_count: 1
+
+two:
+  lego_set: two
+  part: two
+  quantity: 1
+  loose_count: 1

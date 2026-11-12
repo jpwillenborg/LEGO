@@ -1,0 +1,10 @@
+<%= turbo_stream.update "search-alert-stream" do %>
+  <span class="text-rose-500 font-semibold flex items-center gap-1.5">
+    ⚠️ <%= @error_message %>
+  </span>
+<% end %>
+
+<% # Dismiss the loading shroud so error messages are immediately visible %>
+<%= turbo_stream.update "loading-shroud-dismissal-zone" do %>
+  <script>document.getElementById('workspace-loading-shroud').style.display = 'none';</script>
+<% end %>

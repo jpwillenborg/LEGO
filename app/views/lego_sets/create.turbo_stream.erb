@@ -1,0 +1,23 @@
+<% # 1. Replace the active main right workspace grid display panel layout card safely %>
+<%= turbo_stream.replace "matrix-display-panel" do %>
+  <div id="matrix-display-panel" class="lg:col-span-2 w-full portfolio-panel-card min-h-[520px] box-border" style="border: none !important;">
+    <%= render "matrix_grid", selected_set: @selected_set, inventory_parts: @inventory_parts %>
+  </div>
+<% end %>
+
+<% # 2. Refresh the left sidebar list component to include the freshly cached repository option %>
+<%= turbo_stream.replace "local-sets-list-container" do %>
+  <div id="local-sets-list-container" class="flex flex-col gap-3 w-full box-border">
+    <%= render "set_list", lego_sets: @lego_sets, selected_set: @selected_set %>
+  </div>
+<% end %>
+
+<% # 3. Wipe away any old error validation text logs from previous searches %>
+<%= turbo_stream.update "search-alert-stream" do %>
+  <% # Intentionally blank to clear warning messages %>
+<% end %>
+
+<% # 4. FORCE SHUT: Turn the root portal modal shroud back to display none %>
+<%= turbo_stream.update "loading-shroud-dismissal-zone" do %>
+  <script>document.getElementById('workspace-loading-shroud').style.display = 'none';</script>
+<% end %>
